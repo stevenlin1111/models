@@ -87,6 +87,24 @@ class ZeroSampler(BaseSampler):
         ] + self._context_spec.shape.as_list())
     return contexts, contexts
 
+@gin.configurable
+class EnvSampler(BaseSampler):
+  """Random sampler."""
+  def __init__(self, env, **kwargs):
+    self.env = env
+
+  def __call__(self, batch_size, **kwargs):
+    """Sample a batch of context.
+
+    Args:
+      batch_size: Batch size.
+    Returns:
+      Two [batch_size, num_context_dims] tensors.
+    """
+    #contexts = tf.constant(
+    #  self.env.reset(), shape=[batch_size, 1], dtype=tf.int32)
+    contexts = self.env.reset().observation
+    return contexts, contexts
 
 @gin.configurable
 class BinarySampler(BaseSampler):
@@ -105,6 +123,23 @@ class BinarySampler(BaseSampler):
             batch_size,
         ] + spec.shape.as_list(), dtype=tf.float32)
     contexts = tf.cast(tf.greater(contexts, self._probs), dtype=spec.dtype)
+    return contexts, contexts
+
+@gin.configurable
+class EnvRandomSampler(BaseSampler):
+  """Random sampler."""
+  def __init__(self, *args, **kwargs):
+      super().__init__(*args, **kwargs)
+      env_id = 'PointmassUWallTrainEnvBig-v1'
+      import gym
+      import multiworld.envs.pygame
+      import multiworld.envs.mujoco
+      self.env = gym.make(env_id)
+
+
+  def __call__(self, batch_size, **kwargs):
+    goals = self.env.sample_goals(batch_size)['desired_goal']
+    contexts = tf.convert_to_tensor(goals, np.float32)
     return contexts, contexts
 
 
@@ -154,7 +189,6 @@ class RandomSampler(BaseSampler):
       #    [tf.random_normal(tf.shape(state[:, :self._k]), dtype=tf.float64) +
       #     tf.random_shuffle(state[:, :self._k]),
       #     contexts[:, self._k:]], 1)
-
     return contexts, contexts
 
 

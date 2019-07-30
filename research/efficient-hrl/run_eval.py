@@ -43,7 +43,6 @@ def main(_):
       gin.parse_config_file(config_file)
   if FLAGS.params:
     gin.parse_config(FLAGS.params)
-
   eval_.evaluate(FLAGS.checkpoint_dir, FLAGS.eval_dir)
 
 

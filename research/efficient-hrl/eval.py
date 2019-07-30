@@ -115,6 +115,8 @@ def get_evaluate_checkpoint_fn(master, output_dir, eval_step_fns,
         tf.logging.info('[%s] Average meta reward = %f', eval_tag, average_meta_reward)
         tf.logging.info('[%s] Last meta reward = %f', eval_tag, last_meta_reward)
         tf.logging.info('[%s] Average success = %f', eval_tag, average_success)
+        with open('final_dists.csv', 'a') as f:
+            f.write('{}, {}\n'.format(global_step, last_meta_reward))
         if model_rollout_fn is not None:
           preds, model_losses = eval_utils.compute_model_loss(
               sess, model_rollout_fn, states, actions)

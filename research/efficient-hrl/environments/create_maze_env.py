@@ -21,6 +21,36 @@ import gin.tf
 from tf_agents.environments import gym_wrapper
 from tf_agents.environments import tf_py_environment
 
+@gin.configurable
+def create_eval_env(env_name=None, top_down_view=False):
+  env_id = 'PointmassUWallTestEnvBig-v1'
+  import gym
+  import multiworld.envs.pygame
+  import multiworld.envs.mujoco
+  env = gym.make(env_id)
+  from multiworld.envs.flatten_env import FlattenedEnv
+  gym_env = FlattenedEnv(env, 'state_observation')
+
+  # gym_env = cls(**gym_mujoco_kwargs)
+  gym_env.reset()
+  wrapped_env = gym_wrapper.GymWrapper(gym_env)
+  return wrapped_env
+
+
+@gin.configurable
+def create_train_env(env_name=None, top_down_view=False):
+  env_id = 'PointmassUWallTrainEnvBig-v1'
+  import gym
+  import multiworld.envs.pygame
+  import multiworld.envs.mujoco
+  env = gym.make(env_id)
+  from multiworld.envs.flatten_env import FlattenedEnv
+  gym_env = FlattenedEnv(env, 'state_observation')
+
+  # gym_env = cls(**gym_mujoco_kwargs)
+  gym_env.reset()
+  wrapped_env = gym_wrapper.GymWrapper(gym_env)
+  return wrapped_env
 
 @gin.configurable
 def create_maze_env(env_name=None, top_down_view=False):
